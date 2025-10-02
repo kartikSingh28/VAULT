@@ -3,10 +3,17 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import zod from "zod";
 import { UserModel, ContentModel, LinkModel } from "./db";
+import {userMiddleware } from "./middleware";
+const {JWT_SECRET}=require("../src/config");
+
+
+
+
+
 
 const UserRouter = Router();
 
-const JWT_SECRET = "MY_SUPER_SECRET_KEY"; 
+ 
 
 
 UserRouter.post("/signup", async (req, res) => {
@@ -19,11 +26,12 @@ UserRouter.post("/signup", async (req, res) => {
 
   const parseData = DataObject.safeParse(req.body);
 
-  if (!parseData.success) {
-    return res.status(411).json({
-      message: "Invalid Data format",
-    });
-  }
+if (!parseData.success) {
+  return res.status(411).json({
+    message: "Invalid Data format",
+  });
+}
+
 
   const { email, userName, password, collegeName } = parseData.data;
 
@@ -98,6 +106,39 @@ UserRouter.post("/signin", async (req, res) => {
     });
   }
 });
+
+UserRouter.post("/content",userMiddleware,async (req,res)=>{
+  const link=req.body.link;
+  const type=req.body.type;
+  const title=req.body.title;
+
+  try{
+    await ContentModel.create({
+      link,
+      type,
+      title,
+      //@ts-ignore
+      userId:req.userId,
+      tags:[]
+    })
+    res.json({
+      message:"Content created"
+    })
+  }catch(err){
+    res.json({
+      message:"SomeThing Went Wrong"
+    });
+  }
+
+});
+
+//get the user contebt
+UserRouter.get("/show",userMiddleware,async (req,res)=>{
+  //@ts-ignore
+  const userId=req.userId;
+
+  const content=await ContentModel.find({userId:userId}).populate("userId","userName")
+})
 
 module.exports = {
   UserRouter,
