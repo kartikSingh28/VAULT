@@ -6,9 +6,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "rootDir": "./src",
+    "jsx": "react-jsx",
     "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
-  "include": ["src"]
+  "include": ["src", "components"]
 }

@@ -137,8 +137,37 @@ UserRouter.get("/show",userMiddleware,async (req,res)=>{
   //@ts-ignore
   const userId=req.userId;
 
-  const content=await ContentModel.find({userId:userId}).populate("userId","userName")
-})
+  const content=await ContentModel.find({userId:userId}).populate("userId","userName");
+  res.json(content);
+});
+
+//delte user content
+
+UserRouter.delete("/delete",userMiddleware,async (req,res)=>{
+  const contentId=req.body.contentId;
+
+  try{
+    await ContentModel.deleteMany({contentId,userId: req.userId});
+    res.json({
+      message:"Content Deleted"
+    });
+  }catch(err){
+    res.status(500).json({
+      message:"SomeThing went Wrong"
+    });
+  }
+});
+
+
+//share the content Link
+UserRouter.post("/share",userMiddleware,async (req,res)=>{
+  const contentId=req.body
+});
+
+//get the shared Link
+UserRouter.get("/shared",userMiddleware,async (req,res)=>{
+
+});
 
 module.exports = {
   UserRouter,
