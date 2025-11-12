@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
-  "include": ["src", "components"]
+  "include": ["src", "src/components"]
 }
