@@ -2,8 +2,9 @@ import { useRef, useState } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import { BACKEND_URL } from "../config";
 import axios from "axios";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
 
 enum ContentType {
     Youtube = "youtube",
@@ -24,17 +25,31 @@ export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
         const title = titleRef.current?.value;
         const link = linkRef.current?.value;
 
-        await axios.post(`${BACKEND_URL}/api/v1/content`, {
-            link,
-            title,
-            type
-        }, {
-            headers: {
-                "Authorization": localStorage.getItem("token") || ""
-            }
-        });
+        if (!title || !link) {
+            alert("Please fill in all fields");
+            return;
+        }
 
-        onClose();
+        try {
+            await axios.post(`${BACKEND_URL}/api/v1/content`, {
+                link,
+                title,
+                type
+            }, {
+                headers: {
+                    "Authorization": localStorage.getItem("token") || ""
+                }
+            });
+
+            // Clear inputs after successful submission
+            if (titleRef.current) titleRef.current.value = "";
+            if (linkRef.current) linkRef.current.value = "";
+
+            onClose();
+        } catch (error) {
+            console.error("Error adding content:", error);
+            alert("Failed to add content. Please try again.");
+        }
     }
 
     return (
